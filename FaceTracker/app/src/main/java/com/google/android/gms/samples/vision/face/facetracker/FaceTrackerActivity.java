@@ -178,7 +178,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      * Stops the camera.
      */
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
         mPreview.stop();
     }
@@ -188,9 +189,11 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      * rest of the processing pipeline.
      */
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
         super.onDestroy();
-        if (mCameraSource != null) {
+        if (mCameraSource != null)
+        {
             mCameraSource.release();
         }
     }
@@ -212,14 +215,17 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      * @see #requestPermissions(String[], int)
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode != RC_HANDLE_CAMERA_PERM) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        if (requestCode != RC_HANDLE_CAMERA_PERM)
+        {
             Log.d(TAG, "Got unexpected permission result: " + requestCode);
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
             return;
         }
 
-        if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
             // we have permission, so create the camerasource
             createCameraSource();
@@ -229,8 +235,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         Log.e(TAG, "Permission not granted: results len = " + grantResults.length +
                 " Result code = " + (grantResults.length > 0 ? grantResults[0] : "(empty)"));
 
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
                 finish();
             }
         };
@@ -251,19 +259,22 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      * (e.g., because onResume was called before the camera source was created), this will be called
      * again when the camera source is created.
      */
-    private void startCameraSource() {
-
+    private void startCameraSource()
+    {
         // check that the device has play services available.
         int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
                 getApplicationContext());
-        if (code != ConnectionResult.SUCCESS) {
+        if (code != ConnectionResult.SUCCESS)
+        {
             Dialog dlg =
                     GoogleApiAvailability.getInstance().getErrorDialog(this, code, RC_HANDLE_GMS);
             dlg.show();
         }
 
-        if (mCameraSource != null) {
-            try {
+        if (mCameraSource != null)
+        {
+            try
+            {
                 mPreview.start(mCameraSource, mGraphicOverlay);
             } catch (IOException e) {
                 Log.e(TAG, "Unable to start camera source.", e);
@@ -281,9 +292,11 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      * Factory for creating a face tracker to be associated with a new face.  The multiprocessor
      * uses this factory to create face trackers as needed -- one for each individual.
      */
-    private class GraphicFaceTrackerFactory implements MultiProcessor.Factory<Face> {
+    private class GraphicFaceTrackerFactory implements MultiProcessor.Factory<Face>
+    {
         @Override
-        public Tracker<Face> create(Face face) {
+        public Tracker<Face> create(Face face)
+        {
             return new GraphicFaceTracker(mGraphicOverlay);
         }
     }
@@ -292,53 +305,56 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      * Face tracker for each detected individual. This maintains a face graphic within the app's
      * associated face overlay.
      */
-    private class GraphicFaceTracker extends Tracker<Face> {
+    private class GraphicFaceTracker extends Tracker<Face>
+    {
         private GraphicOverlay mOverlay;
         private FaceGraphic mFaceGraphic;
-//        private File imageFile, dir;
-//        private float rotation = 0;
+        private File imageFile, dir;
+        private float rotation = 0;
 
-        GraphicFaceTracker(GraphicOverlay overlay) {
+        GraphicFaceTracker(GraphicOverlay overlay)
+        {
             mOverlay = overlay;
             mFaceGraphic = new FaceGraphic(overlay);
 
-            mFaceGraphic.setFaceGraphicDelegate(new FaceGraphic.FaceGraphicDelegate() {
+            mFaceGraphic.setFaceGraphicDelegate(new FaceGraphic.FaceGraphicDelegate()
+            {
                 @Override
-                public void FrontFaceVerified() {
+                public void FrontFaceVerified()
+                {
                     Toast.makeText(FaceTrackerActivity.this,"Front Face detected, please show your left face to the camera.",Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
-                public void LeftFaceVerified() {
+                public void LeftFaceVerified()
+                {
                     Toast.makeText(FaceTrackerActivity.this,"Left Face detected, please show your right face to the camera.",Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
-                public void RightFaceVerified() {
-                    Toast.makeText(FaceTrackerActivity.this,"Right Face detected, please smile to the camera.",Toast.LENGTH_SHORT).show();
+                public void RightFaceVerified()
+                {
+                    Toast.makeText(FaceTrackerActivity.this,"Right Face detected, please smile to take a selfie.",Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
-                public void SmileFaceVerified() {
-                    Toast.makeText(FaceTrackerActivity.this,"Smile Face detected, please tap on screen to take a selfie.",Toast.LENGTH_SHORT).show();
+                public void SmileFaceVerified()
+                {
+                    Toast.makeText(FaceTrackerActivity.this,"Captured !",Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void FaceVerified()
                 {
-                    findViewById(R.id.preview).setOnClickListener(new View.OnClickListener() {
-                        private File imageFile, dir;
-                        private float rotation = 0;
-                        @Override
-                        public void onClick(View v) {
-                            mCameraSource.takePicture(null, new CameraSource.PictureCallback() {
+                            mCameraSource.takePicture(null, new CameraSource.PictureCallback()
+                            {
                                 @Override
                                 public void onPictureTaken(byte[] bytes) {
                                     try
                                     {
                                         // convert byte array into bitmap
-                                        Bitmap loadedImage = null;
-                                        Bitmap rotatedBitmap = null;
+                                        Bitmap loadedImage;
+                                        Bitmap rotatedBitmap;
                                         loadedImage = BitmapFactory.decodeByteArray(bytes, 0,
                                                 bytes.length);
 
@@ -350,8 +366,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                                 rotateMatrix, false);
 
                                         dir = new File(
-                                                Environment.getExternalStoragePublicDirectory(
-                                                        Environment.DIRECTORY_PICTURES), "MyPhotos");
+                                                Environment.getExternalStorageDirectory(), "/MyPhotos/");
 
                                         boolean success = true;
                                         if (!dir.exists())
@@ -401,8 +416,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                     }
                                 }
                             });
-                        }
-                    });
                 }
 
             });
@@ -412,7 +425,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          * Start tracking the detected face instance within the face overlay.
          */
         @Override
-        public void onNewItem(int faceId, Face item) {
+        public void onNewItem(int faceId, Face item)
+        {
             mFaceGraphic.setId(faceId);
         }
 
@@ -420,7 +434,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          * Update the position/characteristics of the face within the overlay.
          */
         @Override
-        public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
+        public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face)
+        {
             mOverlay.add(mFaceGraphic);
             mFaceGraphic.updateFace(face);
         }
@@ -431,7 +446,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          * view).
          */
         @Override
-        public void onMissing(FaceDetector.Detections<Face> detectionResults) {
+        public void onMissing(FaceDetector.Detections<Face> detectionResults)
+        {
             mOverlay.remove(mFaceGraphic);
         }
 
@@ -440,7 +456,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
          * the overlay.
          */
         @Override
-        public void onDone() {
+        public void onDone()
+        {
             mOverlay.remove(mFaceGraphic);
         }
 

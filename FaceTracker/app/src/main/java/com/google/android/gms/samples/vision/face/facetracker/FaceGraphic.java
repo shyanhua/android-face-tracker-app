@@ -29,9 +29,11 @@ import com.google.android.gms.vision.face.Face;
  * Graphic instance for rendering face position, orientation, and landmarks within an associated
  * graphic overlay view.
  */
-class FaceGraphic extends GraphicOverlay.Graphic {
+class FaceGraphic extends GraphicOverlay.Graphic
+{
 
-    public interface FaceGraphicDelegate {
+    public interface FaceGraphicDelegate
+    {
         void FrontFaceVerified();
         void LeftFaceVerified();
         void RightFaceVerified();
@@ -41,7 +43,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
 
     private static final float ID_TEXT_SIZE = 40.0f;
     private static final float BOX_STROKE_WIDTH = 5.0f;
-    private Boolean flagContinue = false, flagFaceRight = false, flagFaceLeft = false, flagFaceId = false, flagSmile = false;
+    private Boolean flagContinue = false, flagFaceRight = false, flagFaceLeft = false, flagFaceId = false, flagSmile = false, flagCapture = false;
     private Integer faceId;
     private FaceGraphicDelegate faceGraphicDelegate;
 
@@ -67,7 +69,8 @@ class FaceGraphic extends GraphicOverlay.Graphic {
     private volatile Face mFace;
     private int mFaceId;
 
-    FaceGraphic(GraphicOverlay overlay) {
+    FaceGraphic(GraphicOverlay overlay)
+    {
         super(overlay);
 
         mCurrentColorIndex = (mCurrentColorIndex + 1) % COLOR_CHOICES.length;
@@ -86,7 +89,8 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         mBoxPaint.setStrokeWidth(BOX_STROKE_WIDTH);
     }
 
-    void setId(int id) {
+    void setId(int id)
+    {
         mFaceId = id;
     }
 
@@ -95,7 +99,8 @@ class FaceGraphic extends GraphicOverlay.Graphic {
      * Updates the face instance from the detection of the most recent frame.  Invalidates the
      * relevant portions of the overlay to trigger a redraw.
      */
-    void updateFace(Face face) {
+    void updateFace(Face face)
+    {
         mFace = face;
         postInvalidate();
     }
@@ -104,7 +109,8 @@ class FaceGraphic extends GraphicOverlay.Graphic {
      * Draws the face annotations for position on the supplied canvas.
      */
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas)
+    {
         Face face = mFace;
         if (face == null)
         {
@@ -181,10 +187,11 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         }
 
         //selfie after smile
-        if(flagSmile == true)
+        if(flagSmile == true && flagCapture == false)
         {
             //TODO : After this the screen still able to take photo
             faceGraphicDelegate.FaceVerified();
+            flagCapture = true;
             return;
         }
     }
